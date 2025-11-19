@@ -5,6 +5,7 @@ public class PlayerMovement : MonoBehaviour
 {
     private Rigidbody rb;
     private Vector3 movement;
+    private Animator animator;
 
     [Header("Movement variables")] private float playerSpeed;
     [SerializeField] private float playerWalkSpeed = 0.1f;
@@ -13,6 +14,10 @@ public class PlayerMovement : MonoBehaviour
 
     void Start() {
         rb = GetComponent<Rigidbody>();
+        animator = GetComponent<Animator>();
+        if (animator == null) {
+            Debug.LogError("Animator cannot be found");
+        }
         playerSpeed = playerWalkSpeed;
     }
 
@@ -24,7 +29,7 @@ public class PlayerMovement : MonoBehaviour
     void CheckInput() {
         movement.x = Input.GetAxisRaw("Horizontal");
         movement.z = Input.GetAxisRaw("Vertical");
-
+        
         if (Input.GetKeyDown(KeyCode.LeftShift)) {
             playerSpeed = playerRunSpeed;
         } else if (Input.GetKeyUp(KeyCode.LeftShift)) {
@@ -33,7 +38,12 @@ public class PlayerMovement : MonoBehaviour
     }
 
     void MovePlayer() {
+        rb.linearVelocity = movement.normalized;
+        Debug.Log("RB linear velocity: " + rb.linearVelocity.magnitude);
+        animator.SetFloat("PlayerVelocity", rb.linearVelocity.magnitude);
+    }
+
+    void Animations() {
         
-        rb.MovePosition(transform.position + Vector3.Normalize(movement) * playerSpeed);
     }
 }
